@@ -12,3 +12,17 @@ def insertUser(username: str, email: str, password: str):
     except Exception as e:
         return e
 
+def getUserByEmail(email):
+    try:
+        cursor.execute(f"select username, password from users where email = '{email}'")
+        userData = cursor.fetchone()
+        if userData == None:
+            raise Exception('Incorrect password or email, try again')
+        print(userData)
+        user = {
+            "username": userData[0],
+            "password": userData[1],
+        }
+        return user
+    except Exception as e:
+        return e
