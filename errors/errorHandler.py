@@ -1,3 +1,5 @@
-class RegisterEmptyValueError:
-    def __init__(self) -> None:
-        pass
+def generateError(error: str, message: str):
+    return {
+        "error": error,
+        "message": message
+    }

@@ -13,6 +13,10 @@ Available actions
 - exit
 '''
 
+attempts = 0
+
+# handling
+
 def init(message):
    global request
    print(message)
@@ -22,25 +26,40 @@ init(initialMessage)
 
 while request != 'exit':
    if request == 'register':
-      userCredentials = authService.GetCredentials(request)
-      result = authService.register(userCredentials['username'], userCredentials['email'], userCredentials['password'])
+      if not attempts == 3:
+         userCredentials = authService.GetCredentials(request)
 
-      if type(result) == Exception:
-            print(Fore.RED + str(result))
-            init()
-      else: 
-         print(Fore.GREEN + '¡Successfully registered!')
-         # init()
+         try:
+            authService.register(userCredentials['username'], userCredentials['email'], userCredentials['password'])
+            print('¡Successfully registered!')
+            print('---------------')
+            init(initialMessage)
+         except ValueError as e:
+            print('----------------')
+            print(str(e))
+            attempts += 1
+
+         except Exception as e:
+            print('Internal error')
+
+      else:
+         print('3 incorrect attempts')
+         init(initialMessage)
+         attempts = 0
 
    elif request == 'login':
       userCredentials = authService.GetCredentials(request)
       result = authService.login(userCredentials['email'], userCredentials['password'])
       print(type(result))
 
-   # elif request == 'exit':
-   #    print(Fore.CYAN + 'Bye')
-
    elif len(request) == 0:
-      print(Fore.CYAN + 'Any action selected')
+      print('Any action selected')
+      print('--------------')
+      init(initialMessage)
+
+   else:
+      print('select an available action')
+      print('--------------')
+      init(initialMessage)
 
 print(Fore.CYAN + 'Bye')
