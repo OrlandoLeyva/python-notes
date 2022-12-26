@@ -28,14 +28,39 @@ def getUserByEmail(email):
     except Exception as e:
         raise e
 
+# QUERIES ON NOTES TABLE
 def insertNote(note):
     # tile = note['title'],
     # text = note
     try:
+        createNotesTable()
+        cursor.execute(f"insert into notes (title, text, user_id) values ('{note['title']}', '{note['text']}', '{note['userId']}')")
+        dbConnection.commit()
+        return True
+    except Exception as e:
+        raise Exception('error inserting the note:', e)
+
+def getNotesByUserId(userId: int):
+    try:
+        cursor.execute(f"select * from notes where user_id = {userId}")
+        notes = cursor.fetchall()
+        return notes
+    except Exception as e:
+        raise Exception('Error getting notes: ', e)
+
+def removeNote(title: str):
+    try:
+        cursor.execute(f"delete from notes where title = '{title}'")
+        dbConnection.commit()
+    except Exception as e:
+        raise Exception('Error removing note: ', e)
+        
+def createNotesTable():
+    try:
         cursor.execute('''
         create table if not exists notes (
             id serial not null primary key,
-            title varchar(255) not null,
+            title varchar(255) not null unique,
             text text not null,
             user_id int not null,
             constraint notes_users foreign key (user_id)
@@ -45,8 +70,6 @@ def insertNote(note):
             not valid
             );
         ''')
-        cursor.execute(f"insert into notes (title, text, user_id) values ('{note['title']}', '{note['text']}', '{note['userId']}')")
         dbConnection.commit()
-        return True
     except Exception as e:
-        raise Exception('error inserting the note:', e)
+        raise Exception('Error creating notes table:', e)

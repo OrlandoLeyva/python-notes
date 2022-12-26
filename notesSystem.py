@@ -45,19 +45,26 @@ def notesHandler(userId: int):
                     print(e)
                     availableActionsMessage(actionsMessage)
 
+        if request == 'show':
+            showNotes(userId)
+            actionsMessage(availableActionsMessage)
+
+        if request == 'remove':
+            removeNote()
+            actionsMessage(availableActionsMessage)
+
+        if request == 'exit':
+            return 'exit'
+
+        if len(request) == 0:
+            actionsMessage(emptyRequestMessage)
+
+        else:
+            print('select an available action')
+            print('--------------')
+            actionsMessage(availableActionsMessage)
     return 'exit'
-    # if request == 'show':
-    #     showNotes()
 
-    # if request == 'remove':
-    #     removeNote()
-
-    # if request == 'exit':
-    #     return 'exit'
-
-    # if len(request) == 0:
-    #     actionsMessage(emptyRequestMessage)
-    
 # Returns a the note If it was successfully created or False If it wasn't. 
 def createNote(userId: int):
     attempts = 0
@@ -90,13 +97,44 @@ def createNote(userId: int):
     print('3 incorrect attempts')
     return False
 
-def showNotes():
-    pass
+# prints the notes out if everything went well and False if not.
+def showNotes(userId: int):
+    try:
+        notes = queries.getNotesByUserId(userId)
+        print(f'---------------\n')
+        print('Your notes: ' + '\n')
+        if len(notes) == 0:
+            print('Any notes yet')
+            print(f'---------------\n')
+            return True
+        for note in notes:
+            print(f"title: {note[1]}\ntext: {note[2]}\n")
+        print(f'---------------\n')
+    except Exception as e:
+        print(e)
+        return False
 
 def removeNote():
-    pass
-
-
+    attempts = 0
+    while attempts < 3:
+        global noteRemoved
+        noteRemoved = False
+        title = input('Type the tile of the note: ')
+        if valueIsEmpty(title):
+            print('\n'+ 'Title cannot be empty')
+            attempts += 1
+        else:
+            try:
+                queries.removeNote(title)
+                print('Note successfully removed')
+                noteRemoved = True
+                break
+            except Exception as e:
+                print(e)
+                break
+    if noteRemoved == False and attempts == 3:
+        print('3 incorrect attempts')
+        
 def valueIsEmpty(value: str):
     if len(value) == 0:
         return True
