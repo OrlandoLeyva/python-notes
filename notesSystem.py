@@ -1,3 +1,5 @@
+# NOTE: not to accept duplicate title
+
 from database import queries
 
 
@@ -85,8 +87,8 @@ def createNote(userId: int):
     if titleIsCreated:
         attempts = 0
         while attempts < 3:
-            text = input('type your note: ')
-            if valueIsEmpty(note):
+            text = input('type your note: ').strip()
+            if valueIsEmpty(text):
                 print('\n'+ 'Note cannot be empty')
                 attempts += 1
             else:
