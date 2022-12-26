@@ -12,11 +12,10 @@ def login(email, password):
         validateCredential(email, password, 'login')
         user = queries.getUserByEmail(email)
         if not user['password'] == password:
-           raise Exception('Incorrect password or email, try again')
-        return f"welcome back, {user['username']}"
+           raise ValueError('Incorrect password or email, try again')
+        return user
     except Exception as e:
-            print('email', type(e))
-            return e
+            raise e
 
 def validateCredential(email: str, password: str, request, username = '' ):
     if request == 'register':
