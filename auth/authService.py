@@ -1,18 +1,30 @@
+import bcrypt
+
 from database import queries
 
 def register(username:str, email: str, password: str):
     try:
         validateCredential(email, password, 'register', username)
-        return queries.insertUser(username, email, password)
+        hashedPassword = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt())
+        # Decode the hashed password to avoid it gets encode twice.
+        return queries.insertUser(username, email, hashedPassword.decode())
+    except ValueError as e:
+        raise e
     except Exception as e:
         raise e
      
-def login(email, password):
+def login(email: str, password: str):
     try:
+        # Validates if the credentials are not empty.
         validateCredential(email, password, 'login')
-        user = queries.getUserByEmail(email)
-        if not user['password'] == password:
-           raise ValueError('Incorrect password or email, try again')
+
+        # Getting the user by email and validating the password.
+        user = queries.getUserByEmail(email) 
+        hashedPassword: str = user['password']
+        passwordIsCorrect = bcrypt.checkpw(password.encode(), hashedPassword.encode())
+        if not passwordIsCorrect:
+           raise ValueError('Incorrect password or email')
+        
         return user
     except Exception as e:
             raise e

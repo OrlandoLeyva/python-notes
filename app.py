@@ -54,7 +54,7 @@ while request != 'exit':
          init(initialMessage)
          attempts = 0
 
-   elif request == 'login':
+   if request == 'login':
       if not loginAttempts == 3:
          userCredentials = authService.GetCredentials(request)
          try:
@@ -69,6 +69,7 @@ while request != 'exit':
             print(str(e))
             loginAttempts += 1
          except Exception as e:
+            print(e)
             print('Internal error')
             request = 'exit'
       else:
@@ -76,7 +77,7 @@ while request != 'exit':
          init(initialMessage)
          loginAttempts = 0
 
-   elif len(request) == 0:
+   if len(request) == 0:
       print('Any action selected')
       print('--------------')
       init(initialMessage)
