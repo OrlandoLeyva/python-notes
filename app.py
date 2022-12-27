@@ -1,19 +1,19 @@
 # notes application. register and login system.
-#TODO: welcome message when you login.
 
-import colorama
-from colorama import Fore
+from colorama import Fore, Style
+from termcolor import colored, COLORS
 
 from auth import authService
 from notesSystem import notesHandler
+from database.queries import duplicateEmailMessage
 
-initialMessage = '''
+initialMessage = colored('''
 Available actions
 
 - register
 - login
 - exit
-'''
+''', 'cyan')
 
 attempts = 0
 loginAttempts = 0
@@ -34,12 +34,16 @@ while request != 'exit':
 
          try:
             authService.register(userCredentials['username'], userCredentials['email'], userCredentials['password'])
-            print('¡Successfully registered!')
+            print(colored('¡Successfully registered!', 'green'))
             print('---------------')
             init(initialMessage)
          except ValueError as e:
             print('----------------')
-            print(str(e))
+            if str(e).startswith(duplicateEmailMessage):
+               print(colored('Email already taken', 'red'))
+               print()
+            else:
+               print(e)
             attempts += 1
 
          except Exception as e:
@@ -55,7 +59,8 @@ while request != 'exit':
          userCredentials = authService.GetCredentials(request)
          try:
             user = authService.login(userCredentials['email'], userCredentials['password'])
-            print(f"\nwelcome, {user['username']}. Let's get started")
+            print('---------------')
+            print(colored(f"\nwelcome, {user['username']}. Let's get started", 'green'))
             notesResult = notesHandler(user['id'])
             if notesResult == 'exit':
                request = 'exit'

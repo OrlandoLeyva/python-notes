@@ -1,18 +1,20 @@
 # NOTE: not to accept duplicate title
 
+from termcolor import colored
+
 from database import queries
 
 
-availableActionsMessage = '''
+availableActionsMessage = colored('''
 Available actions
 
 - create note (create)
 - show notes (show)
 - remove note (remove)
 - exit
-'''
+''', 'cyan')
 
-emptyRequestMessage = '''
+emptyRequestMessage = colored('''
 any action selected, try again
 
 Available actions
@@ -21,7 +23,7 @@ Available actions
 - show notes (show)
 - remove note (remove)
 - exit
-'''
+''', 'cyan')
 
 def actionsMessage(message):
     print(message)
@@ -41,7 +43,8 @@ def notesHandler(userId: int):
             else:
                 try:
                     queries.insertNote(note)
-                    print('\n'+ 'Note successfully created')
+                    print('\n'+ colored('Note successfully created', 'green'))
+                    print('---------------')
                     actionsMessage(availableActionsMessage)
                 except Exception as e:
                     print(e)
@@ -77,19 +80,23 @@ def createNote(userId: int):
         titleIsCreated = False
         title = input('Type the title: ')
         if valueIsEmpty(title):
-            print('\n'+ 'Title cannot be empty')
+            print('\n'+ colored('Title cannot be empty', 'red'))
             attempts += 1
         else:
-            titleIsCreated = True
-            note['title'] = title
-            break
+            try:
+                queries.validateNoteTitle(title)
+                titleIsCreated = True
+                note['title'] = title
+                break
+            except ValueError as e:
+                print('\n' + colored(e, 'red'))
 
     if titleIsCreated:
         attempts = 0
         while attempts < 3:
             text = input('type your note: ').strip()
             if valueIsEmpty(text):
-                print('\n'+ 'Note cannot be empty')
+                print('\n'+ colored('Note cannot be empty', 'red'))
                 attempts += 1
             else:
                 note['text'] = text
@@ -104,7 +111,7 @@ def showNotes(userId: int):
     try:
         notes = queries.getNotesByUserId(userId)
         print(f'---------------\n')
-        print('Your notes: ' + '\n')
+        print(colored('Your notes: ', 'cyan') + '\n')
         if len(notes) == 0:
             print('Any notes yet')
             print(f'---------------\n')

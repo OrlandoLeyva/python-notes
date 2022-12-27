@@ -2,6 +2,8 @@ from database import connection
 
 dbConnection = connection.dbConnection
 
+duplicateEmailMessage = 'duplicate key value violates unique constraint "users_email_u"'
+
 cursor = connection.cursor
 
 def insertUser(username: str, email: str, password: str):
@@ -10,7 +12,7 @@ def insertUser(username: str, email: str, password: str):
         dbConnection.commit()
         return 'success'
     except Exception as e:
-        return e
+        raise ValueError(e)
 
 def getUserByEmail(email):
     try:
@@ -73,3 +75,20 @@ def createNotesTable():
         dbConnection.commit()
     except Exception as e:
         raise Exception('Error creating notes table:', e)
+
+def validateNoteTitle(title: str):
+    try:
+        createNotesTable()
+        cursor.execute(f"select * from notes where title = '{title}'")
+        if cursor.rowcount >= 1:
+            raise ValueError('Tile already taken')
+        else:
+            return True
+    except ValueError as e:
+        raise(e)
+    except Exception as e:
+        raise(e)
+    
+
+    
+
