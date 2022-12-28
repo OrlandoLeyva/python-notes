@@ -1,4 +1,5 @@
 # notes application. register and login system.
+#TODO: modify all the init message system.
 
 from colorama import Fore, Style
 from termcolor import colored, COLORS

@@ -46,3 +46,4 @@ def GetCredentials(request: str):
     userCredentials['email'] = input('Insert your email: ')
     userCredentials['password'] = input('Insert your password: ')
     return userCredentials
+
