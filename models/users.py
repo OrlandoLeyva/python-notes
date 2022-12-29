@@ -55,7 +55,7 @@ class User:
         while True:
             if valueIsEmpty(action):
                 print(colored('\nSelect an action', 'red'))
-                actionsMessage()
+                defineAction()
 
             if action == 'create':
                 print('\ncreating new note...')
@@ -87,7 +87,7 @@ class User:
                 print(colored('\ntitle cannot be empty', 'red'))
             else:
                 if not validator.validateTitle(title, userId):
-                    print(f"Title '{title}' already exists")
+                    print(colored(f"\nTitle '{title}' already exists", 'red'))
                 else:
                     break
         
@@ -101,10 +101,6 @@ class User:
                 note.save()
                 print(colored(f"\nNote '{note.title}' successfully created", 'green'))
                 break
-
-        # text = input('Insert text: ')
-
-        # print(f'Your note:\ntitle: {title}\ntext: {text}')
 
     def listNotes(self, userId: int):
         try:
@@ -120,7 +116,6 @@ class User:
         except Exception as e:
             exit('Internal error')
         
-
     def removeNote(self, userId: int):
         while True:
             try:
