@@ -1,12 +1,14 @@
 # notes application. register and login system.
 #TODO: modify all the init message system.
 
-from colorama import Fore, Style
 from termcolor import colored, COLORS
 
-from auth import authService
+from auth import auth
+from models import users
 from notesSystem import notesHandler
 from database.queries import duplicateEmailMessage
+
+authService = auth.Auth()
 
 initialMessage = colored('''
 Available actions
@@ -15,6 +17,8 @@ Available actions
 - login
 - exit
 ''', 'cyan')
+
+
 
 attempts = 0
 loginAttempts = 0
@@ -28,64 +32,20 @@ def init(message):
 
 init(initialMessage)
 
-while request != 'exit':
+while True:
    if request == 'register':
-      if not attempts == 3:
-         userCredentials = authService.GetCredentials(request)
-
-         try:
-            authService.register(userCredentials['username'], userCredentials['email'], userCredentials['password'])
-            print(colored('¡Successfully registered!', 'green'))
-            print('---------------')
-            init(initialMessage)
-         except ValueError as e:
-            print('----------------')
-            if str(e).startswith(duplicateEmailMessage):
-               print(colored('Email already taken', 'red'))
-               print()
-            else:
-               print(e)
-            attempts += 1
-
-         except Exception as e:
-            print('Internal error')
-
-      else:
-         print('3 incorrect attempts')
+         authService.register()
          init(initialMessage)
-         attempts = 0
 
    if request == 'login':
-      if not loginAttempts == 3:
-         userCredentials = authService.GetCredentials(request)
-         try:
-            user = authService.login(userCredentials['email'], userCredentials['password'])
-            print('---------------')
-            print(colored(f"\nwelcome, {user['username']}. Let's get started", 'green'))
-            notesResult = notesHandler(user['id'])
-            if notesResult == 'exit':
-               request = 'exit'
-         except ValueError as e:
-            print('---------------')
-            print(str(e))
-            loginAttempts += 1
-         except Exception as e:
-            print(e)
-            print('Internal error')
-            request = 'exit'
-      else:
-         print('3 incorrect attempts')
-         init(initialMessage)
-         loginAttempts = 0
+      userData = authService.login()
+            # return users.User(userData[1], userData[2], userData[3])
+      user = users.User(userData[1], userData[2], userData[3]) 
+      user.selectAction(userData[0])
 
-   if len(request) == 0:
-      print('Any action selected')
-      print('--------------')
+   if request == 'exit':
+      exit('Bye')
+
+   if not request in ['register', 'login', 'exit']:
+      print(colored('\nselect an available action', 'red'))
       init(initialMessage)
-
-   else:
-      print('select an available action')
-      print('--------------')
-      init(initialMessage)
-
-print(Fore.CYAN + 'Bye')
